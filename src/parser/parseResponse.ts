@@ -54,6 +54,7 @@ export const parseHighlights = (
 	return highlightData.updated.map((highlight) => {
 		const highlightRange = highlight.range;
 		let reviewContent;
+		let reviewCreateTime;
 		if (reviewData.reviews) {
 			const review = reviewData.reviews
 				.map((review) => review.review)
@@ -61,6 +62,7 @@ export const parseHighlights = (
 				.first();
 			if (review) {
 				reviewContent = convertTags ? convertTagToBiLink(review.content) : review.content;
+				reviewCreateTime = window.moment(review.createTime * 1000).format('YYYY-MM-DD HH:mm:ss');
 			}
 		}
 
@@ -80,7 +82,8 @@ export const parseHighlights = (
 			colorStyle: highlight.colorStyle,
 			chapterTitle: chapterInfo?.title || '未知章节',
 			markText: intentMarkText,
-			reviewContent: addIndentToParagraphs(reviewContent)
+			reviewContent: addIndentToParagraphs(reviewContent),
+			reviewCreateTime: reviewCreateTime
 		};
 	});
 };
@@ -121,7 +124,7 @@ export const parseArticleHighlightReview = (
 				return o1Start - o2Start;
 			});
 		let chapterReviews;
-		if (chapterHighlights && chapterHighlights.length > 0 && reviews) {
+		if (reviews) {
 			chapterReviews = reviews
 				.filter((review) => refMpReviewId == review.refMpInfo?.reviewId)
 				.sort((o1, o2) => {
@@ -139,18 +142,31 @@ export const parseArticleHighlightReview = (
 				});
 		}
 
-		if (chapterHighlights && chapterHighlights.length > 0) {
+		// deduplicate reviews
+		const highlightRanges = new Set(chapterHighlights.map((h) => h.range));
+		const uniqueReviews = chapterReviews
+			? chapterReviews.filter((r) => !highlightRanges.has(r.range))
+			: [];
+		const chapterEntries = [...chapterHighlights, ...uniqueReviews].sort((o1, o2) => {
+			const o1Start = parseInt((o1.range || '0').split('-')[0]);
+			const o2Start = parseInt((o2.range || '0').split('-')[0]);
+			return o1Start - o2Start;
+		});
+
+		const showEmptyChapterTitleToggle = get(settingsStore).showEmptyChapterTitleToggle;
+		if ((chapterEntries && chapterEntries.length > 0) || showEmptyChapterTitleToggle) {
 			chapterResult.push({
 				chapterTitle: chapterTitle,
 				level: chapter.level,
 				isMPChapter: chapter.isMPChapter,
 				chapterReviews: chapterReviews,
-				highlights: chapterHighlights
+				highlights: chapterHighlights,
+				chapterEntries: chapterEntries
 			});
 		}
 	}
 
-	return chapterResult.sort((o1, o2) => o1.chapterIdx - o2.chapterIdx);
+	return chapterResult;
 };
 export const parseChapterHighlightReview = (
 	chapters: Chapter[],
@@ -173,7 +189,7 @@ export const parseChapterHighlightReview = (
 				return o1Start - o2Start;
 			});
 		let chapterReviews;
-		if (chapterHighlights && chapterHighlights.length > 0 && reviews) {
+		if (reviews) {
 			chapterReviews = reviews
 				.filter((review) => chapterUid == review.chapterUid && review.type == 1)
 				.sort((o1, o2) => {
@@ -191,9 +207,20 @@ export const parseChapterHighlightReview = (
 				});
 		}
 
+		// deduplicate reviews
+		const highlightRanges = new Set(chapterHighlights.map((h) => h.range));
+		const uniqueReviews = chapterReviews
+			? chapterReviews.filter((r) => !highlightRanges.has(r.range))
+			: [];
+		const chapterEntries = [...chapterHighlights, ...uniqueReviews].sort((o1, o2) => {
+			const o1Start = parseInt((o1.range || '0').split('-')[0]);
+			const o2Start = parseInt((o2.range || '0').split('-')[0]);
+			return o1Start - o2Start;
+		});
+
 		const showEmptyChapterTitleToggle = get(settingsStore).showEmptyChapterTitleToggle;
 		// if showEmptyChapterTitle is true, will set chapter even there is no highlight in this chapter
-		if ((chapterHighlights && chapterHighlights.length > 0) || showEmptyChapterTitleToggle) {
+		if ((chapterEntries && chapterEntries.length > 0) || showEmptyChapterTitleToggle) {
 			chapterResult.push({
 				chapterUid: chapterUid,
 				chapterIdx: chapterIdx,
@@ -201,12 +228,13 @@ export const parseChapterHighlightReview = (
 				level: chapter.level,
 				isMPChapter: chapter.isMPChapter,
 				chapterReviews: chapterReviews,
-				highlights: chapterHighlights
+				highlights: chapterHighlights,
+				chapterEntries: chapterEntries
 			});
 		}
 	}
 
-	return chapterResult.sort((o1, o2) => o1.chapterIdx - o2.chapterIdx);
+	return chapterResult;
 };
 
 export const parseChapterResp = (

@@ -371,6 +371,7 @@ export type Highlight = {
 	style: number;
 	colorStyle: number;
 	reviewContent?: string;
+	reviewCreateTime?: string;
 	range: string;
 	refMpReviewId?: string;
 };
@@ -415,6 +416,7 @@ export type ChapterHighlightReview = {
 	// highlight and review can be empty, just output title
 	highlights?: Highlight[];
 	chapterReviews?: Review[];
+	chapterEntries?: (Highlight | Review)[];
 };
 
 export type RenderTemplate = {

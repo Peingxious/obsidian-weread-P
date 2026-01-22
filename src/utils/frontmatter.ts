@@ -5,10 +5,10 @@ import { settingsStore } from '../settings';
 import { get } from 'svelte/store';
 
 type FrontMatterContent = {
-	doc_type: string;
-	bookId: string;
-	noteCount: number;
-	reviewCount: number;
+	doc_type?: string;
+	bookId?: string;
+	noteCount?: number;
+	reviewCount?: number;
 	author?: string;
 	cover?: string;
 	readingStatus?: string;
@@ -33,18 +33,17 @@ export const buildFrontMatter = (
 	noteBook: Notebook,
 	existFile?: TFile
 ) => {
-	const frontMatter: FrontMatterContent = {
-		doc_type: frontMatterDocType,
-		bookId: noteBook.metaData.bookId,
-		reviewCount: noteBook.metaData.reviewCount,
-		noteCount: noteBook.metaData.noteCount
-	};
+	const frontMatter: FrontMatterContent = {};
 
 	const saveReadingInfoToggle = get(settingsStore).saveReadingInfoToggle;
 
 	if (saveReadingInfoToggle) {
-		(frontMatter.author = noteBook.metaData.author),
-			(frontMatter.cover = noteBook.metaData.cover);
+		frontMatter.doc_type = frontMatterDocType;
+		frontMatter.bookId = noteBook.metaData.bookId;
+		frontMatter.reviewCount = noteBook.metaData.reviewCount;
+		frontMatter.noteCount = noteBook.metaData.noteCount;
+		frontMatter.author = noteBook.metaData.author;
+		frontMatter.cover = noteBook.metaData.cover;
 
 		const readInfo = noteBook.metaData.readInfo;
 		if (readInfo) {

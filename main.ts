@@ -5,6 +5,7 @@ import ApiManager from './src/api';
 import { settingsStore } from './src/settings';
 import { WereadSettingsTab } from './src/settingTab';
 import { WEREAD_BROWSER_VIEW_ID, WereadReadingView } from './src/components/wereadReading';
+import { SyncSelectModal } from './src/components/syncSelectModal';
 import './style.css';
 export default class WereadPlugin extends Plugin {
 	private syncNotebooks: SyncNotebooks;
@@ -56,6 +57,15 @@ export default class WereadPlugin extends Plugin {
 
 			menu.addItem((item) =>
 				item
+					.setTitle('同步指定书籍笔记')
+					.setIcon('search')
+					.onClick(() => {
+						new SyncSelectModal(this.app, this.syncNotebooks).open();
+					})
+			);
+
+			menu.addItem((item) =>
+				item
 					.setTitle('在新标签页打开微信读书')
 					.setIcon('book-open-text')
 					.onClick(() => {
@@ -91,6 +101,14 @@ export default class WereadPlugin extends Plugin {
 			name: '强制同步微信读书笔记',
 			callback: () => {
 				this.startSync(true);
+			}
+		});
+
+		this.addCommand({
+			id: 'sync-weread-notes-select-command',
+			name: '同步指定书籍笔记',
+			callback: () => {
+				new SyncSelectModal(this.app, this.syncNotebooks).open();
 			}
 		});
 

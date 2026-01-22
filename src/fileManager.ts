@@ -208,6 +208,8 @@ export default class FileManager {
 			fileName = baseFileName.replace(/（.*）/g, '');
 		}
 
+		fileName = `《${fileName}》`;
+
 		switch (fileNameType) {
 			case 'BOOK_ID':
 				return metaData.bookId;

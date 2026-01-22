@@ -155,10 +155,33 @@ export default class SyncNotebooks {
 		return filterMetaArr;
 	}
 
-	private async getALlMetadata() {
+	public async getALlMetadata() {
 		const noteBookResp: [] = await this.apiManager.getNotebooksWithRetry();
 		const metaDataArr = noteBookResp.map((noteBook) => parseMetadata(noteBook));
 		return metaDataArr;
+	}
+
+	public async syncBook(bookId: string) {
+		new Notice('正在同步指定书籍...');
+		try {
+			const metaDataArr = await this.getALlMetadata();
+			const targetMeta = metaDataArr.find((meta) => meta.bookId === bookId);
+			if (targetMeta) {
+				const localFiles: AnnotationFile[] = await this.fileManager.getNotebookFiles();
+				const localNotebookFile = await this.getLocalNotebookFile(targetMeta, localFiles, true);
+				if (localNotebookFile) {
+					targetMeta.file = localNotebookFile;
+				}
+				const notebook = await this.convertToNotebook(targetMeta);
+				await this.saveNotebook(notebook);
+				new Notice(`《${targetMeta.title}》同步完成!`);
+			} else {
+				new Notice(`未找到书籍ID: ${bookId}`);
+			}
+		} catch (e) {
+			console.error('同步书籍失败', e);
+			new Notice('同步书籍失败，请查看控制台日志');
+		}
 	}
 
 	private async saveToJounal(journalDate: string, metaDataArr: Metadata[]) {

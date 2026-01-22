@@ -1,43 +1,44 @@
 ---
-isbn: {{metaData.isbn}}
-lastReadDate: {{metaData.lastReadDate}}
+aliases:
+tags:
+banner: {{metaData.cover}}
+Type: 书籍
+Status: 归档
 ---
-# 元数据
-> [!abstract] {{metaData.title}}
-> - ![ {{metaData.title}}|200]({{metaData.cover}})
-> - 书名： {{metaData.title}}
-> - 作者： {{metaData.author}}
+
+> [!xgxx]+ {{metaData.title}}
+> - [{{metaData.title}} - {{metaData.author}} - 微信读书](https://weread.qq.com/web/reader/{{metaData.bookId}})
 > - 简介： {% set intro = metaData.intro | replace("\n","") | replace("\r","") %}{{intro}}
 > - 出版时间： {{metaData.publishTime}}
 > - ISBN： {{metaData.isbn}}
 > - 分类： {{metaData.category}}
 > - 出版社： {{metaData.publisher}}
-> - PC地址：{{metaData.pcUrl}}
 
-# 高亮划线
+# 《{{metaData.title}}》
+
+ {{metaData.author}}
+ {{metaData.noteCount}}个笔记
+
 {% for chapter in chapterHighlights %}
-{% if chapter.level == 1 %}## {{chapter.chapterTitle}}{% elif chapter.level == 2 %}### {{chapter.chapterTitle}}{% elif chapter.level == 3 %}#### {{chapter.chapterTitle}}{% endif %}
-{% for highlight in chapter.highlights %}{% if highlight.reviewContent %}
-> 📌 {{ highlight.markText |trim }} ^{{highlight.bookmarkId}}
-- 💭 {{highlight.reviewContent}} - ⏱ {{highlight.createTime}} {% else %}
-> 📌 {{ highlight.markText |trim }} 
-> ⏱ {{highlight.createTime}} ^{{highlight.bookmarkId}}{% endif %}
-{% endfor %}{% endfor %}
-# 读书笔记
-{% for chapter in bookReview.chapterReviews %}{% if chapter.reviews or chapter.chapterReview %}
-## {{chapter.chapterTitle}}
-{% if chapter.chapterReviews %}{% for chapterReview in chapter.chapterReviews %}
-### 章节评论 No.{{loop.index}}
-- {{chapterReview.content}} ^{{chapterReview.reviewId}}
-    - ⏱ {{chapterReview.createTime}} {% endfor %}{% endif %}{% if chapter.reviews %}{% for review in chapter.reviews %}
-### 划线评论
-> 📌 {{review.abstract |trim }}  ^{{review.reviewId}}
-    - 💭 {{review.content}}
-    - ⏱ {{review.createTime}}
-{% endfor %} {% endif %} {% endif %} {% endfor %}
-# 本书评论
-{% if bookReview.bookReviews %}{% for bookReview in bookReview.bookReviews %}
-## 书评 No.{{loop.index}} 
-{{bookReview.mdContent}} ^{{bookReview.reviewId}}
-⏱ {{bookReview.createTime}}
-{% endfor %}{% endif %}
+#  {{chapter.chapterTitle}}
+
+{% for entry in chapter.chapterEntries %}
+{% if entry.markText %}
+{{ entry.markText |trim }}
+
+{% if entry.reviewContent %}
+> {{entry.reviewCreateTime | slice(0,10) | replace("-", "/") }} 发表想法
+> {{entry.reviewContent}}
+{% endif %}
+{% elif entry.abstract %}
+{{ entry.abstract |trim }}
+
+> {{entry.createTime | slice(0,10) | replace("-", "/") }} 发表想法
+> {{entry.content}}
+{% else %}
+> {{entry.createTime | slice(0,10) | replace("-", "/") }} 发表想法
+> {{entry.content}}
+{% endif %}
+
+{% endfor %}
+{% endfor %}
