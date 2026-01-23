@@ -35,8 +35,9 @@ export class SyncSelectModal extends SuggestModal<Metadata> {
 	}
 
 	renderSuggestion(book: Metadata, el: HTMLElement) {
-		el.createEl('div', { text: book.title });
-		el.createEl('small', { text: book.author });
+		el.createEl('div', { text: `《${book.title}》` });
+		const subInfo = book.category ? `${book.author} | ${book.category}` : book.author;
+		el.createEl('div', { text: subInfo, attr: { style: 'font-size: 0.6em' } });
 	}
 
 	onChooseSuggestion(book: Metadata, evt: MouseEvent | KeyboardEvent) {

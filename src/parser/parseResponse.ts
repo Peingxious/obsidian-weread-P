@@ -25,13 +25,15 @@ export const parseMetadata = (noteBook: any): Metadata => {
 	const bookId = book['bookId'];
 	const pcUrl = getPcUrl(bookId);
 	const author = book['author'].replace(/\[(.*?)\]/g, '【$1】');
+	const publishTime = book['publishTime'];
 	const metaData: Metadata = {
 		bookId: book['bookId'],
 		author: author,
 		title: book['title'],
 		url: book['url'],
 		cover: cover,
-		publishTime: book['publishTime'],
+		publishTime: publishTime ? window.moment(publishTime).format('YYYY-MM-DD') : '',
+		category: book['category'],
 		noteCount: noteBook['noteCount'],
 		reviewCount: noteBook['reviewCount'],
 		bookType: book['type'],
@@ -62,7 +64,7 @@ export const parseHighlights = (
 				.first();
 			if (review) {
 				reviewContent = convertTags ? convertTagToBiLink(review.content) : review.content;
-				reviewCreateTime = window.moment(review.createTime * 1000).format('YYYY-MM-DD HH:mm:ss');
+				reviewCreateTime = window.moment(review.createTime * 1000).format('YYYY-MM-DD HH:mm');
 			}
 		}
 
@@ -73,7 +75,7 @@ export const parseHighlights = (
 		return {
 			bookmarkId: highlight.bookmarkId?.replace(/[_~]/g, '-'),
 			created: highlight.createTime,
-			createTime: window.moment(highlight.createTime * 1000).format('YYYY-MM-DD HH:mm:ss'),
+			createTime: window.moment(highlight.createTime * 1000).format('YYYY-MM-DD HH:mm'),
 			chapterUid: highlight.chapterUid,
 			chapterIdx: chapterInfo?.chapterIdx || highlight.chapterUid,
 			refMpReviewId: highlight.refMpReviewId,
@@ -299,7 +301,7 @@ export const parseReviews = (resp: BookReviewResponse): Review[] => {
 	return resp.reviews.map((reviewData) => {
 		const review = reviewData.review;
 		const created = review.createTime;
-		const createTime = window.moment(created * 1000).format('YYYY-MM-DD HH:mm:ss');
+		const createTime = window.moment(created * 1000).format('YYYY-MM-DD HH:mm');
 
 		const mdContent = review.htmlContent
 			? NodeHtmlMarkdown.translate(review.htmlContent)

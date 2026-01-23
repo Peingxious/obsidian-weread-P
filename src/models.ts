@@ -349,13 +349,16 @@ export type Metadata = {
 	readInfo?: {
 		markedStatus?: number;
 		readingTime: number;
+		readingTimeStr?: string;
 		totalReadDay?: number;
 		continueReadDays?: number;
 		readingBookCount?: number;
 		readingBookDate: number;
+		readingBookDateStr?: string;
 		finishedBookCount?: number;
 		finishedBookIndex?: number;
 		finishedDate: number;
+		finishedDateStr?: string;
 		readingProgress: number;
 	};
 };

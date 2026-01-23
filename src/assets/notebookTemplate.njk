@@ -3,16 +3,22 @@ aliases:
 tags:
 banner: {{metaData.cover}}
 Type: 书籍
-Status: 归档
+Status: 
 ---
 
-> [!xgxx]+ {{metaData.title}}
-> - [{{metaData.title}} - {{metaData.author}} - 微信读书](https://weread.qq.com/web/reader/{{metaData.bookId}})
+> [!xgxx]- [{{metaData.title}} - {{metaData.author}} - 微信读书](https://weread.qq.com/web/reader/{{metaData.bookId}})
 > - 简介： {% set intro = metaData.intro | replace("\n","") | replace("\r","") %}{{intro}}
 > - 出版时间： {{metaData.publishTime}}
 > - ISBN： {{metaData.isbn}}
 > - 分类： {{metaData.category}}
 > - 出版社： {{metaData.publisher}}
+> - BookId: {{metaData.bookId}}
+> - 想法数量: {{metaData.reviewCount}}
+> - 笔记数量: {{metaData.noteCount}}
+> - 进度: {{metaData.readInfo.readingProgress}}%
+> - 阅读时长: {{metaData.readInfo.readingTimeStr}}
+> - 阅读日期: {{metaData.readInfo.readingBookDateStr}}
+> - 完成日期: {{metaData.readInfo.finishedDateStr}}
 
 # 《{{metaData.title}}》
 
@@ -27,16 +33,16 @@ Status: 归档
 {{ entry.markText |trim }}
 
 {% if entry.reviewContent %}
-> {{entry.reviewCreateTime | slice(0,10) | replace("-", "/") }} 发表想法
+> {{ entry.reviewCreateTime or entry.createTime }} 发表想法：
 > {{entry.reviewContent}}
 {% endif %}
 {% elif entry.abstract %}
 {{ entry.abstract |trim }}
 
-> {{entry.createTime | slice(0,10) | replace("-", "/") }} 发表想法
+> {{ entry.createTime }} 发表想法：
 > {{entry.content}}
 {% else %}
-> {{entry.createTime | slice(0,10) | replace("-", "/") }} 发表想法
+> {{entry.createTime}} 发表想法：
 > {{entry.content}}
 {% endif %}
 

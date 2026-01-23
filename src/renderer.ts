@@ -33,7 +33,33 @@ export class Renderer {
 
 	validate(template: string): boolean {
 		try {
-			nunjucks.renderString(template, {});
+			const mockContext = {
+				metaData: {
+					title: '',
+					author: '',
+					intro: '',
+					publishTime: '2000-01-01 00:00:00',
+					isbn: '',
+					category: '',
+					publisher: '',
+					bookId: '',
+					reviewCount: 0,
+					noteCount: 0,
+					cover: '',
+					readInfo: {
+						readingProgress: 0,
+						readingTimeStr: '',
+						readingBookDateStr: '',
+						finishedDateStr: ''
+					}
+				},
+				chapterHighlights: [],
+				bookReview: {
+					bookReviews: [],
+					chapterReviews: []
+				}
+			};
+			nunjucks.renderString(template, mockContext);
 			return true;
 		} catch (error) {
 			console.error('validate weread template error,please check', error);

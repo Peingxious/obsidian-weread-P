@@ -88,11 +88,19 @@ export default class SyncNotebooks {
 		}
 		const progress: BookProgressResponse = await this.apiManager.getProgress(metaData.bookId);
 		if (progress && progress.book) {
+			const readingTime = progress.book.readingTime;
+			const hours = Math.floor(readingTime / 3600);
+			const minutes = Math.floor((readingTime % 3600) / 60);
+			const readingTimeStr = `${hours}小时${minutes}分钟`;
+
 			metaData.readInfo = {
 				readingProgress: progress.book.progress,
 				readingTime: progress.book.readingTime,
+				readingTimeStr: readingTimeStr,
 				readingBookDate: progress.book.startReadingTime,
-				finishedDate: progress.book.finishTime
+				readingBookDateStr: window.moment(progress.book.startReadingTime * 1000).format('YYYY-MM-DD'),
+				finishedDate: progress.book.finishTime,
+				finishedDateStr: window.moment(progress.book.finishTime * 1000).format('YYYY-MM-DD')
 			};
 		}
 
