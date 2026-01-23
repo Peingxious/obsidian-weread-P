@@ -33,7 +33,6 @@ export const parseMetadata = (noteBook: any): Metadata => {
 		url: book['url'],
 		cover: cover,
 		publishTime: publishTime ? window.moment(publishTime).format('YYYY-MM-DD') : '',
-		category: book['category'],
 		noteCount: noteBook['noteCount'],
 		reviewCount: noteBook['reviewCount'],
 		bookType: book['type'],

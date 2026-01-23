@@ -28,16 +28,16 @@ export class SyncSelectModal extends SuggestModal<Metadata> {
 		}
 
 		const lowerCaseQuery = query.toLowerCase();
-		return this.metaDataArr.filter((book) =>
-			book.title.toLowerCase().includes(lowerCaseQuery) ||
-			book.author.toLowerCase().includes(lowerCaseQuery)
+		return this.metaDataArr.filter(
+			(book) =>
+				book.title.toLowerCase().includes(lowerCaseQuery) ||
+				book.author.toLowerCase().includes(lowerCaseQuery)
 		);
 	}
 
 	renderSuggestion(book: Metadata, el: HTMLElement) {
-		el.createEl('div', { text: `《${book.title}》` });
-		const subInfo = book.category ? `${book.author} | ${book.category}` : book.author;
-		el.createEl('div', { text: subInfo, attr: { style: 'font-size: 0.6em' } });
+		el.createEl('div', { text: book.title });
+		el.createEl('small', { text: book.author });
 	}
 
 	onChooseSuggestion(book: Metadata, evt: MouseEvent | KeyboardEvent) {
